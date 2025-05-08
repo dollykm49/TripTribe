@@ -1,0 +1,17 @@
+# backend/app/users/schemas.py
+
+from pydantic import BaseModel
+from typing import Optional
+
+class UserProfileCreate(BaseModel):
+    user_id: int
+    bio: Optional[str] = ""
+    travel_style: str
+    interests: str  # ex: "beaches,hiking,vegan"
+
+class FriendRequestSchema(BaseModel):
+    from_user: int
+    to_user: int
+
+class FriendAcceptSchema(BaseModel):
+    request_id: int
