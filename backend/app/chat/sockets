@@ -1,0 +1,24 @@
+# backend/app/chat/sockets.py
+
+from fastapi import WebSocket, WebSocketDisconnect, APIRouter
+
+router = APIRouter()
+
+active_connections = {}
+
+@router.websocket("/ws/chat/{thread_id}")
+async def websocket_endpoint(websocket: WebSocket, thread_id: int):
+    await websocket.accept()
+    if thread_id not in active_connections:
+        active_connections[thread_id] = []
+    active_connections[thread_id].append(websocket)
+    
+    try:
+        while True:
+            data = await websocket.receive_text()
+            # Broadcast to others in same thread
+            for conn in active_connections[thread_id]:
+                if conn != websocket:
+                    await conn.send_text(data)
+    except WebSocketDisconnect:
+        active_connections[thread_id].remove(websocket)
