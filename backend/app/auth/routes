@@ -1,0 +1,39 @@
+# backend/app/auth/routes.py
+
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
+from sqlalchemy.orm import Session
+from app.db.session import SessionLocal
+from app.auth import schemas, service
+from app.auth.models import KYCUpload
+import shutil
+
+auth_router = APIRouter()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@auth_router.post("/register", response_model=schemas.TokenResponse)
+def register(data: schemas.UserRegister, db: Session = Depends(get_db)):
+    token = service.register_user(db, data)
+    return {"access_token": token}
+
+@auth_router.post("/login", response_model=schemas.TokenResponse)
+def login(data: schemas.UserLogin, db: Session = Depends(get_db)):
+    token = service.login_user(db, data)
+    if not token:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    return {"access_token": token}
+
+@auth_router.post("/kyc/upload")
+def upload_kyc(user_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
+    filename = f"kyc_{user_id}_{file.filename}"
+    with open(f"uploads/{filename}", "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    record = KYCUpload(user_id=user_id, filename=filename)
+    db.add(record)
+    db.commit()
+    return {"status": "uploaded", "file": filename}
