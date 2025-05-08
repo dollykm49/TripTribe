@@ -1,0 +1,26 @@
+# backend/app/users/service.py
+
+from app.users.models import UserProfile, FriendRequest, Friend
+from sqlalchemy.orm import Session
+
+def create_profile(db: Session, data):
+    profile = UserProfile(**data.dict())
+    db.add(profile)
+    db.commit()
+    return profile
+
+def send_friend_request(db: Session, from_user: int, to_user: int):
+    req = FriendRequest(from_user=from_user, to_user=to_user)
+    db.add(req)
+    db.commit()
+    return req
+
+def accept_friend_request(db: Session, request_id: int):
+    req = db.query(FriendRequest).filter_by(id=request_id).first()
+    if not req:
+        return None
+    req.status = "accepted"
+    db.add(Friend(user_id=req.from_user, friend_id=req.to_user))
+    db.add(Friend(user_id=req.to_user, friend_id=req.from_user))
+    db.commit()
+    return req
