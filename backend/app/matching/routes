@@ -1,0 +1,19 @@
+# backend/app/matching/routes.py
+
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.matching import schemas, service
+from app.db.session import SessionLocal
+
+match_router = APIRouter()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@match_router.post("/")
+def match(data: schemas.MatchRequest, db: Session = Depends(get_db)):
+    return service.find_matches(db, data.user_id)
