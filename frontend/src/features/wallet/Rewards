@@ -1,0 +1,21 @@
+import { useState } from "react"
+import axios from "axios"
+
+export default function Rewards({ userId }) {
+  const [redeemed, setRedeemed] = useState(false)
+
+  const handleRedeem = async () => {
+    const res = await axios.post(`/api/rewards/redeem`, { user_id: userId })
+    alert(`Redeemed: ${res.data.reward}`)
+    setRedeemed(true)
+  }
+
+  return (
+    <div className="mt-6 border-t pt-4">
+      <h3 className="font-semibold">Your Rewards</h3>
+      <button onClick={handleRedeem} disabled={redeemed} className="btn-secondary">
+        Redeem Points
+      </button>
+    </div>
+  )
+}
