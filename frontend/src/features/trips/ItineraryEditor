@@ -3,7 +3,10 @@ import axios from "axios"
 
 export default function ItineraryEditor({ tripId, userId }) {
   const [items, setItems] = useState([])
-  const [form, setForm] = useState({ title: "", description: "", start_time: "", end_time: "", is_public: true })
+  const [editingId, setEditingId] = useState(null)
+  const [form, setForm] = useState({
+    title: "", description: "", start_time: "", end_time: "", is_public: true
+  })
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -13,31 +16,62 @@ export default function ItineraryEditor({ tripId, userId }) {
     fetchItems()
   }, [tripId])
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-  }
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
+  const handleCheckbox = () => setForm({ ...form, is_public: !form.is_public })
 
-  const handleCheckbox = () => {
-    setForm({ ...form, is_public: !form.is_public })
-  }
-
-  const handleAdd = async () => {
-    const payload = { ...form, trip_id: tripId, added_by: userId }
-    const res = await axios.post("/api/trips/itinerary", payload)
-    setItems([...items, res.data])
+  const resetForm = () => {
+    setEditingId(null)
     setForm({ title: "", description: "", start_time: "", end_time: "", is_public: true })
+  }
+
+  const handleAddOrUpdate = async () => {
+    const payload = { ...form, trip_id: tripId, added_by: userId }
+
+    if (editingId) {
+      await axios.put(`/api/trips/itinerary/${editingId}`, payload)
+    } else {
+      const res = await axios.post("/api/trips/itinerary", payload)
+      setItems([...items, res.data])
+    }
+
+    resetForm()
+    const updated = await axios.get(`/api/trips/itinerary?trip_id=${tripId}`)
+    setItems(updated.data)
+  }
+
+  const startEdit = (item) => {
+    setEditingId(item.id)
+    setForm({
+      title: item.title,
+      description: item.description,
+      start_time: item.start_time,
+      end_time: item.end_time,
+      is_public: item.is_public
+    })
+  }
+
+  const handleDelete = async (id) => {
+    if (confirm("Delete this itinerary item?")) {
+      await axios.delete(`/api/trips/itinerary/${id}`)
+      setItems(items.filter(i => i.id !== id))
+    }
   }
 
   return (
     <div className="p-4">
       <h2 className="text-lg font-semibold mb-2">Trip Itinerary</h2>
-      <div className="space-y-2">
+
+      <div className="space-y-3">
         {items.map(item => (
-          <div key={item.id} className="border p-2 rounded bg-white shadow">
+          <div key={item.id} className="border p-3 rounded bg-white shadow relative">
             <h3 className="font-bold">{item.title}</h3>
             <p>{item.description}</p>
             <div className="text-xs text-gray-500">
               {item.start_time} → {item.end_time} | {item.is_public ? "Public" : "Private"}
+            </div>
+            <div className="absolute top-2 right-2 space-x-2">
+              <button onClick={() => startEdit(item)} className="text-blue-600 text-sm">Edit</button>
+              <button onClick={() => handleDelete(item.id)} className="text-red-600 text-sm">Delete</button>
             </div>
           </div>
         ))}
@@ -46,8 +80,6 @@ export default function ItineraryEditor({ tripId, userId }) {
       <div className="mt-6 space-y-2 border-t pt-4">
         <input name="title" value={form.title} onChange={handleChange} className="input" placeholder="Title" />
         <textarea name="description" value={form.description} onChange={handleChange} className="input" placeholder="Description" />
-        <input name="start_time" type="datetime-local" value={form.start_time} onChange={handleChange} className="input" />
-        <input name="end_time" type="datetime-local" value={form.end_time} onChange={handleChange} className="input" />
-        <label className="flex items-center space-x-2">
-          <input type="checkbox" checked={form.is_public} onChange={handleCheckbox} />
-          <span>Public item</span>
+        <input name="start_time" type="datetime-local" value={form.start_time} onChange={han
+
+  
