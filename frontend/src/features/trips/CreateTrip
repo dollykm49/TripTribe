@@ -1,0 +1,28 @@
+import { useForm } from "react-hook-form"
+import axios from "axios"
+import { useState } from "react"
+import SuggestedRoutes from "./SuggestedRoutes"
+
+export default function CreateTrip() {
+  const { register, handleSubmit } = useForm()
+  const [routes, setRoutes] = useState(null)
+
+  const onSubmit = async (data) => {
+    await axios.post("/api/trips", data)
+    const res = await axios.get(`/api/trips/ai-suggest?start=${data.start}&destination=${data.destination}&prefs=${data.preferences}`)
+    setRoutes(res.data)
+  }
+
+  return (
+    <div className="p-4 max-w-xl mx-auto">
+      <h1 className="text-xl font-bold mb-2">Plan a Trip</h1>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
+        <input {...register("start")} placeholder="Start Location" className="input" />
+        <input {...register("destination")} placeholder="Destination" className="input" />
+        <input {...register("preferences")} placeholder="Preferences (e.g. waterfalls,ghost towns)" className="input" />
+        <button className="btn-primary">Generate Routes</button>
+      </form>
+      {routes && <SuggestedRoutes routes={routes} />}
+    </div>
+  )
+}
