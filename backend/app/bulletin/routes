@@ -1,0 +1,27 @@
+# backend/app/bulletin/routes.py
+
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.db.session import SessionLocal
+from app.bulletin import schemas, service
+
+bulletin_router = APIRouter()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@bulletin_router.post("/post")
+def create_trip_post(data: schemas.TripPostCreate, db: Session = Depends(get_db)):
+    return service.create_post(db, data)
+
+@bulletin_router.get("/posts")
+def view_public(gender: str = "any", dest: str = "", db: Session = Depends(get_db)):
+    return service.get_public_posts(db, gender, dest)
+
+@bulletin_router.post("/interest")
+def react_to_post(data: schemas.ExpressInterestSchema, db: Session = Depends(get_db)):
+    return service.express_interest(db, data)
