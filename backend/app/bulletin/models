@@ -1,0 +1,25 @@
+# backend/app/bulletin/models.py
+
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Text
+from datetime import datetime
+from app.db.session import Base
+
+class TripPost(Base):
+    __tablename__ = "trip_posts"
+    id = Column(Integer, primary_key=True)
+    poster_id = Column(Integer)
+    destination = Column(String)
+    start_date = Column(String)
+    end_date = Column(String)
+    gender_preference = Column(String, default="any")  # male/female/any
+    expectations = Column(Text)
+    is_public = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+class InterestRecord(Base):
+    __tablename__ = "interest_records"
+    id = Column(Integer, primary_key=True)
+    post_id = Column(Integer)
+    viewer_id = Column(Integer)
+    anonymous = Column(Boolean, default=True)
+    timestamp = Column(DateTime, default=datetime.utcnow)
