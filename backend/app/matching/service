@@ -1,0 +1,27 @@
+# backend/app/matching/service.py
+
+from app.users.models import UserProfile
+from app.matching.models import MatchLog
+from sqlalchemy.orm import Session
+
+def compute_score(user_interests: set, other_interests: set):
+    overlap = user_interests.intersection(other_interests)
+    total = user_interests.union(other_interests)
+    return len(overlap) / len(total) if total else 0
+
+def find_matches(db: Session, user_id: int):
+    all_profiles = db.query(UserProfile).all()
+    requester = next((p for p in all_profiles if p.user_id == user_id), None)
+    if not requester: return []
+
+    requester_tags = set(requester.interests.split(","))
+
+    matches = []
+    for profile in all_profiles:
+        if profile.user_id == user_id:
+            continue
+        other_tags = set(profile.interests.split(","))
+        score = compute_score(requester_tags, other_tags)
+        matches.append({"user_id": profile.user_id, "score": score})
+
+    return sorted(matches, key=lambda x: x["score"], reverse=True)
