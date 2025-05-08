@@ -1,0 +1,21 @@
+# backend/app/chat/models.py
+
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean, Text
+from datetime import datetime
+from app.db.session import Base
+
+class Thread(Base):
+    __tablename__ = "threads"
+    id = Column(Integer, primary_key=True)
+    is_group = Column(Boolean, default=False)
+    linked_trip = Column(Integer, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+class Message(Base):
+    __tablename__ = "messages"
+    id = Column(Integer, primary_key=True)
+    thread_id = Column(Integer)
+    sender_id = Column(Integer)
+    content = Column(Text)
+    parent_id = Column(Integer, nullable=True)  # For threaded replies
+    timestamp = Column(DateTime, default=datetime.utcnow)
