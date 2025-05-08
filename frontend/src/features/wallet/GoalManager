@@ -1,0 +1,28 @@
+import { useForm } from "react-hook-form"
+import axios from "axios"
+
+export default function GoalManager({ userId }) {
+  const { register, handleSubmit, reset } = useForm()
+
+  const onSubmit = async (data) => {
+    await axios.post("/api/wallet/goal", {
+      ...data,
+      user_id: userId,
+      target_amount: parseFloat(data.target_amount)
+    })
+    reset()
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="mt-6 border-t pt-4 space-y-2">
+      <h3 className="font-semibold">Savings Goal</h3>
+      <input {...register("name")} placeholder="Goal name" className="input" />
+      <input {...register("target_amount")} placeholder="Target amount" className="input" />
+      <select {...register("frequency")} className="input">
+        <option value="daily">Daily</option>
+        <option value="weekly">Weekly</option>
+      </select>
+      <button type="submit" className="btn-secondary">Create Goal</button>
+    </form>
+  )
+}
