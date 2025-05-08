@@ -1,0 +1,14 @@
+# backend/app/chat/schemas.py
+
+from pydantic import BaseModel
+from typing import Optional
+
+class MessageSend(BaseModel):
+    thread_id: int
+    sender_id: int
+    content: str
+    parent_id: Optional[int] = None
+
+class ThreadCreate(BaseModel):
+    is_group: bool = False
+    linked_trip: Optional[int] = None
