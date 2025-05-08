@@ -1,0 +1,27 @@
+# backend/app/users/routes.py
+
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.db.session import SessionLocal
+from app.users import schemas, service
+
+user_router = APIRouter()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@user_router.post("/profile")
+def create_profile(data: schemas.UserProfileCreate, db: Session = Depends(get_db)):
+    return service.create_profile(db, data)
+
+@user_router.post("/friend-request")
+def send_friend(data: schemas.FriendRequestSchema, db: Session = Depends(get_db)):
+    return service.send_friend_request(db, data.from_user, data.to_user)
+
+@user_router.post("/friend-accept")
+def accept_friend(data: schemas.FriendAcceptSchema, db: Session = Depends(get_db)):
+    return service.accept_friend_request(db, data.request_id)
