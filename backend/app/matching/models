@@ -1,0 +1,13 @@
+# backend/app/matching/models.py
+
+from sqlalchemy import Column, Integer, Float, DateTime
+from datetime import datetime
+from app.db.session import Base
+
+class MatchLog(Base):
+    __tablename__ = "match_logs"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer)
+    matched_user_id = Column(Integer)
+    score = Column(Float)
+    matched_at = Column(DateTime, default=datetime.utcnow)
