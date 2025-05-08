@@ -1,0 +1,24 @@
+# backend/app/bulletin/service.py
+
+from app.bulletin.models import TripPost, InterestRecord
+from sqlalchemy.orm import Session
+
+def create_post(db: Session, data):
+    post = TripPost(**data.dict())
+    db.add(post)
+    db.commit()
+    return post
+
+def get_public_posts(db: Session, gender: str = "any", dest: str = ""):
+    query = db.query(TripPost).filter_by(is_public=True)
+    if gender != "any":
+        query = query.filter(TripPost.gender_preference.in_([gender, "any"]))
+    if dest:
+        query = query.filter(TripPost.destination.ilike(f"%{dest}%"))
+    return query.all()
+
+def express_interest(db: Session, data):
+    record = InterestRecord(**data.dict())
+    db.add(record)
+    db.commit()
+    return record
