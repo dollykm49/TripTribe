@@ -1,0 +1,18 @@
+# backend/app/bulletin/schemas.py
+
+from pydantic import BaseModel
+from typing import Optional
+
+class TripPostCreate(BaseModel):
+    poster_id: int
+    destination: str
+    start_date: str
+    end_date: str
+    gender_preference: Optional[str] = "any"
+    expectations: str
+    is_public: bool = True
+
+class ExpressInterestSchema(BaseModel):
+    post_id: int
+    viewer_id: int
+    anonymous: bool = True
