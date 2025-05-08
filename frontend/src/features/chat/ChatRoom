@@ -1,0 +1,31 @@
+import { useEffect, useState, useRef } from "react"
+import io from "socket.io-client"
+import ChatInput from "./ChatInput"
+import MessageBubble from "./MessageBubble"
+
+const socket = io("http://localhost:8000") // adjust port if needed
+
+export default function ChatRoom({ threadId, userId }) {
+  const [messages, setMessages] = useState([])
+  const bottomRef = useRef()
+
+  useEffect(() => {
+    socket.emit("join", threadId)
+    socket.on("message", (msg) => setMessages((prev) => [...prev, msg]))
+    return () => socket.disconnect()
+  }, [threadId])
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages])
+
+  return (
+    <div className="flex flex-col h-full p-4">
+      <div className="flex-1 overflow-y-scroll space-y-2">
+        {messages.map((msg, i) => <MessageBubble key={i} msg={msg} me={msg.sender_id === userId} />)}
+        <div ref={bottomRef} />
+      </div>
+      <ChatInput threadId={threadId} userId={userId} />
+    </div>
+  )
+}
