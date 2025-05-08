@@ -1,0 +1,32 @@
+import { useForm } from "react-hook-form"
+import axios from "axios"
+
+export default function TransferForm({ userId, onTransfer }) {
+  const { register, handleSubmit, reset } = useForm()
+
+  const onSubmit = async (data) => {
+    try {
+      await axios.post("/api/wallet/transfer", {
+        from_user: userId,
+        to_user: data.to_user,
+        amount: parseFloat(data.amount),
+        category: data.category
+      })
+      onTransfer()
+      reset()
+    } catch (err) {
+      alert("Transfer failed: " + err.response.data.detail)
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="mt-6 border-t pt-4 space-y-2">
+      <h3 className="font-semibold">Send Money</h3>
+      <input {...register("to_user")} placeholder="Recipient User ID" className="input" />
+      <input {...register("amount")} placeholder="Amount" className="input" />
+      <input {...register("category")} placeholder="Category (e.g. food, travel)" className="input" />
+      <button type="submit" className="btn-primary">Transfer</button>
+    </form>
+  )
+}
+
