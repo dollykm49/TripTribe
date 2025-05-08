@@ -1,0 +1,27 @@
+# backend/app/trips/routes.py
+
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.db.session import SessionLocal
+from app.trips import schemas, service
+
+trip_router = APIRouter()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@trip_router.post("/")
+def create_trip(data: schemas.TripCreate, db: Session = Depends(get_db)):
+    return service.create_trip(db, data)
+
+@trip_router.post("/itinerary")
+def add_item(data: schemas.ItineraryCreate, db: Session = Depends(get_db)):
+    return service.add_itinerary_item(db, data)
+
+@trip_router.get("/routes")
+def get_routes(start: str, destination: str, prefs: str = ""):
+    return service.generate_routes(start, destination, prefs)
