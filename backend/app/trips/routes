@@ -25,3 +25,21 @@ def add_item(data: schemas.ItineraryCreate, db: Session = Depends(get_db)):
 @trip_router.get("/routes")
 def get_routes(start: str, destination: str, prefs: str = ""):
     return service.generate_routes(start, destination, prefs)
+
+@trip_router.get("/itinerary")
+def get_itinerary(trip_id: int, db: Session = Depends(get_db)):
+    return db.query(ItineraryItem).filter_by(trip_id=trip_id).order_by(ItineraryItem.start_time).all()
+
+@trip_router.put("/itinerary/{item_id}")
+def update_item(item_id: int, data: schemas.ItineraryItemCreate, db: Session = Depends(get_db)):
+    item = db.query(ItineraryItem).filter_by(id=item_id).first()
+    for key, value in data.dict().items():
+        setattr(item, key, value)
+    db.commit()
+    return item
+
+@trip_router.delete("/itinerary/{item_id}")
+def delete_item(item_id: int, db: Session = Depends(get_db)):
+    db.query(ItineraryItem).filter_by(id=item_id).delete()
+    db.commit()
+    return {"status": "deleted"}
