@@ -1,0 +1,17 @@
+# backend/app/trips/schemas.py
+
+from pydantic import BaseModel
+from typing import List, Optional
+
+class TripCreate(BaseModel):
+    owner_id: int
+    start_location: str
+    destination: str
+    route_type: str  # fastest/scenic/alt
+    preferences: Optional[str] = ""
+
+class ItineraryCreate(BaseModel):
+    trip_id: int
+    day: int
+    activity: str
+    notes: Optional[str] = ""
