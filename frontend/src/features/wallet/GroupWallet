@@ -1,0 +1,28 @@
+import { useState, useEffect } from "react"
+import axios from "axios"
+
+export default function GroupWallet({ tripId, userId }) {
+  const [members, setMembers] = useState([])
+  const [balance, setBalance] = useState(0)
+
+  useEffect(() => {
+    const fetchWallet = async () => {
+      const res = await axios.get(`/api/group-wallet/${tripId}`)
+      setMembers(res.data.members)
+      setBalance(res.data.balance)
+    }
+    fetchWallet()
+  }, [tripId])
+
+  return (
+    <div className="mt-6 border-t pt-4">
+      <h3 className="font-semibold">Shared Group Wallet</h3>
+      <p><strong>Total:</strong> ${balance.toFixed(2)}</p>
+      <ul className="text-sm">
+        {members.map(m => (
+          <li key={m.user_id}>🧍 {m.username} — ${m.contribution}</li>
+        ))}
+      </ul>
+    </div>
+  )
+}
