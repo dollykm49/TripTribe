@@ -1,0 +1,27 @@
+# backend/app/chat/routes.py
+
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.chat import schemas, service
+from app.db.session import SessionLocal
+
+chat_router = APIRouter()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@chat_router.post("/thread")
+def create(data: schemas.ThreadCreate, db: Session = Depends(get_db)):
+    return service.create_thread(db, data)
+
+@chat_router.post("/message")
+def send(data: schemas.MessageSend, db: Session = Depends(get_db)):
+    return service.send_message(db, data)
+
+@chat_router.get("/thread/{thread_id}")
+def history(thread_id: int, db: Session = Depends(get_db)):
+    return service.get_thread_messages(db, thread_id)
