@@ -1,0 +1,25 @@
+# backend/app/trips/service.py
+
+from app.trips.models import Trip, ItineraryItem
+from sqlalchemy.orm import Session
+
+def create_trip(db: Session, data):
+    trip = Trip(**data.dict())
+    db.add(trip)
+    db.commit()
+    db.refresh(trip)
+    return trip
+
+def add_itinerary_item(db: Session, data):
+    item = ItineraryItem(**data.dict())
+    db.add(item)
+    db.commit()
+    return item
+
+# AI route generator stub (mocked for now)
+def generate_routes(start, destination, preferences):
+    return {
+        "fastest": ["Route 1", "Attraction A", "Hotel X"],
+        "scenic": ["Route 2", "Waterfall", "Campground Y"],
+        "alternative": ["Route 3", "Ghost Town", "Casino Z"]
+    }
