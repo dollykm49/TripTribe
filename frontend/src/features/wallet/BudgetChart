@@ -1,0 +1,33 @@
+import { useEffect, useState } from "react"
+import axios from "axios"
+import { Pie } from "react-chartjs-2"
+
+export default function BudgetChart({ userId }) {
+  const [data, setData] = useState([])
+
+  useEffect(() => {
+    axios.get(`/api/wallet/transactions/${userId}`).then(res => {
+      const grouped = {}
+      res.data.forEach(txn => {
+        const cat = txn.category || "uncategorized"
+        grouped[cat] = (grouped[cat] || 0) + txn.amount
+      })
+      setData(Object.entries(grouped))
+    })
+  }, [])
+
+  const chartData = {
+    labels: data.map(d => d[0]),
+    datasets: [{
+      data: data.map(d => d[1]),
+      backgroundColor: ["#34d399", "#3b82f6", "#fbbf24", "#ef4444"]
+    }]
+  }
+
+  return (
+    <div className="mt-6 border-t pt-4">
+      <h3 className="font-semibold">Budget Breakdown</h3>
+      <Pie data={chartData} />
+    </div>
+  )
+}
