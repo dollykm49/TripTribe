@@ -1,0 +1,14 @@
+export default function SuggestedRoutes({ routes }) {
+  return (
+    <div className="mt-4">
+      <h2 className="font-semibold">AI Suggested Routes:</h2>
+      <ul className="space-y-2">
+        {Object.entries(routes).map(([type, desc]) => (
+          <li key={type} className="bg-white shadow p-3 rounded">
+            <strong>{type.toUpperCase()}:</strong> {desc}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
