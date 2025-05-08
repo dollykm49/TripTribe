@@ -1,0 +1,21 @@
+import { useState } from "react"
+import io from "socket.io-client"
+
+const socket = io("http://localhost:8000")
+
+export default function ChatInput({ threadId, userId }) {
+  const [text, setText] = useState("")
+
+  const send = () => {
+    const msg = { thread_id: threadId, sender_id: userId, content: text }
+    socket.emit("message", msg)
+    setText("")
+  }
+
+  return (
+    <div className="mt-2 flex">
+      <input value={text} onChange={(e) => setText(e.target.value)} className="flex-1 input" placeholder="Type a message..." />
+      <button onClick={send} className="btn-secondary ml-2">Send</button>
+    </div>
+  )
+}
