@@ -1,0 +1,19 @@
+# backend/app/chat/service.py
+
+from app.chat.models import Thread, Message
+from sqlalchemy.orm import Session
+
+def create_thread(db: Session, data):
+    thread = Thread(**data.dict())
+    db.add(thread)
+    db.commit()
+    return thread
+
+def send_message(db: Session, data):
+    msg = Message(**data.dict())
+    db.add(msg)
+    db.commit()
+    return msg
+
+def get_thread_messages(db: Session, thread_id: int):
+    return db.query(Message).filter_by(thread_id=thread_id).order_by(Message.timestamp.asc()).all()
