@@ -1,0 +1,32 @@
+import { useEffect, useState } from "react"
+import axios from "axios"
+import TransferForm from "./TransferForm"
+import GoalManager from "./GoalManager"
+import TransactionList from "./TransactionList"
+
+export default function WalletDashboard({ userId }) {
+  const [wallet, setWallet] = useState({ balance: 0, rewards: 0 })
+
+  const loadWallet = async () => {
+    const res = await axios.get(`/api/wallet/balance/${userId}`)
+    setWallet(res.data)
+  }
+
+  useEffect(() => {
+    loadWallet()
+  }, [])
+
+  return (
+    <div className="p-4">
+      <h2 className="text-xl font-bold">💰 My Wallet</h2>
+      <div className="bg-white shadow rounded p-4 mt-2 space-y-2">
+        <div><strong>Balance:</strong> ${wallet.balance.toFixed(2)}</div>
+        <div><strong>Reward Points:</strong> {wallet.rewards}</div>
+      </div>
+
+      <TransferForm userId={userId} onTransfer={loadWallet} />
+      <GoalManager userId={userId} />
+      <TransactionList userId={userId} />
+    </div>
+  )
+}
