@@ -27,6 +27,9 @@ export default function WalletDashboard({ userId }) {
       <TransferForm userId={userId} onTransfer={loadWallet} />
       <GoalManager userId={userId} />
       <TransactionList userId={userId} />
+      <GroupWallet tripId={tripId} userId={usedId} />
+      <BudgetChart userId={userId} />
+      <Rewards userId={userId} />
     </div>
   )
 }
