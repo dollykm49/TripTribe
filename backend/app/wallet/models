@@ -1,0 +1,25 @@
+# backend/app/wallet/models.py
+
+from sqlalchemy import Column, Integer, Float, String, DateTime, ForeignKey, Boolean
+from datetime import datetime
+from app.db.session import Base
+
+class Wallet(Base):
+    __tablename__ = "wallets"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, unique=True)
+    balance = Column(Float, default=0.0)
+    reward_points = Column(Integer, default=0)
+
+class Transaction(Base):
+    __tablename__ = "transactions"
+    id = Column(Integer, primary_key=True)
+    from_user = Column(Integer)
+    to_user = Column(Integer)
+    amount = Column(Float)
+    category = Column(String)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
+class SavingsGoal(Base):
+    __tablename__ = "savings_goals"
+    id = Column(Integer, primary_key=True)
