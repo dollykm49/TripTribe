@@ -1,0 +1,16 @@
+# backend/app/wallet/schemas.py
+
+from pydantic import BaseModel
+from typing import Optional
+
+class TransferSchema(BaseModel):
+    from_user: int
+    to_user: int
+    amount: float
+    category: Optional[str] = "transfer"
+
+class GoalCreateSchema(BaseModel):
+    user_id: int
+    name: str
+    target_amount: float
+    frequency: str  # "daily", "weekly"
