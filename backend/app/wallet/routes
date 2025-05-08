@@ -1,0 +1,31 @@
+# backend/app/wallet/routes.py
+
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from app.wallet import service, schemas
+from app.db.session import SessionLocal
+
+wallet_router = APIRouter()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@wallet_router.post("/transfer")
+def transfer(data: schemas.TransferSchema, db: Session = Depends(get_db)):
+    try:
+        return service.transfer_funds(db, data)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@wallet_router.post("/goal")
+def create_goal(data: schemas.GoalCreateSchema, db: Session = Depends(get_db)):
+    return service.create_savings_goal(db, data)
+
+@wallet_router.get("/balance/{user_id}")
+def balance(user_id: int, db: Session = Depends(get_db)):
+    wallet = service.get_or_create_wallet(db, user_id)
+    return {"balance": wallet.balance, "rewards": wallet.reward_points}
