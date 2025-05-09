@@ -1,0 +1,21 @@
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.db.session import SessionLocal
+from app.group_wallet import service, schemas
+
+group_wallet_router = APIRouter()
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@group_wallet_router.get("/{trip_id}")
+def get_wallet(trip_id: int, db: Session = Depends(get_db)):
+    return service.get_group_wallet(db, trip_id)
+
+@group_wallet_router.post("/deposit")
+def deposit(data: schemas.DepositSchema, db: Session = Depends(get_db)):
+    return service.deposit_to_group_wallet(db, data)
