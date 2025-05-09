@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.db.session import SessionLocal
 from app.group_wallet import service, schemas
-
+from app.group_wallet.schemas import SplitSchema
 group_wallet_router = APIRouter()
 
 def get_db():
@@ -19,3 +19,7 @@ def get_wallet(trip_id: int, db: Session = Depends(get_db)):
 @group_wallet_router.post("/deposit")
 def deposit(data: schemas.DepositSchema, db: Session = Depends(get_db)):
     return service.deposit_to_group_wallet(db, data)
+
+@grop_wallet_router.post("/split")
+def record_split(data: SplitSchema, db: Session = Depends(get_db)):
+    return service.create_split(db, data)
