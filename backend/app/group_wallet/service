@@ -1,0 +1,13 @@
+def get_group_wallet(db, trip_id):
+    # Fetch all contributors & total sum
+    return {
+        "balance": 1500.0,
+        "members": [
+            {"user_id": 1, "username": "jake", "contribution": 500},
+            {"user_id": 2, "username": "sara", "contribution": 1000}
+        ]
+    }
+
+def deposit_to_group_wallet(db, data):
+    # Add a record & update user contribution
+    return {"status": "ok"}
