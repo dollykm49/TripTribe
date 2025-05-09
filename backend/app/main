@@ -10,7 +10,7 @@ from app.bulletin.routes import bulletin_router
 from app.chat.routes import chat_router
 from app.matching.routes import match_router
 from app.db.session import init_db
-
+from app.group_wallet.routes import group_wallet_router
 app = FastAPI(title="TripTribe API")
 
 # 🛡️ CORS
@@ -35,3 +35,4 @@ app.include_router(wallet_router, prefix="/api/wallet")
 app.include_router(bulletin_router, prefix="/api/bulletin")
 app.include_router(chat_router, prefix="/api/chat")
 app.include_router(match_router, prefix="/api/matching")
+app.include_router(group_wallet_router, prefix="/api/group-wallet")
