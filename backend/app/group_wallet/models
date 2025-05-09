@@ -1,0 +1,17 @@
+from sqlalchemy import Column, Integer, Float, DateTime
+from datetime import datetime
+from app.db.session import Base
+
+class GroupWallet(Base):
+    __tablename__ = "group_wallets"
+    id = Column(Integer, primary_key=True)
+    trip_id = Column(Integer, unique=True)  # One wallet per trip
+    total_balance = Column(Float, default=0.0)
+
+class GroupDeposit(Base):
+    __tablename__ = "group_deposits"
+    id = Column(Integer, primary_key=True)
+    trip_id = Column(Integer)
+    user_id = Column(Integer)
+    amount = Column(Float)
+    timestamp = Column(DateTime, default=datetime.utcnow)
