@@ -11,3 +11,23 @@ def get_group_wallet(db, trip_id):
 def deposit_to_group_wallet(db, data):
     # Add a record & update user contribution
     return {"status": "ok"}
+
+import json
+from app.group_wallet.models import GroupSplit, GroupDeposit
+
+def create_split(db: Session, data: SplitSchema):
+    split = GroupSplit(
+        trip_id=data.trip_id,
+        payer_id=data.payer_id,
+        total_amount=data.total_amount,
+        split_details=json.dumps(data.split_details)
+    )
+    db.add(split)
+
+    for user_id, amount in data.split_details.items():
+        if int(user_id) == data.payer_id:
+            continue  # Skip payer, already paid
+        db.add(GroupDeposit(trip_id=data.trip_id, user_id=int(user_id), amount=-amount))
+
+    db.commit()
+    return {"status": "split-recorded", "payer": data.payer_id}
