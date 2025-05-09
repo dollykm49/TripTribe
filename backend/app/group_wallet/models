@@ -15,3 +15,12 @@ class GroupDeposit(Base):
     user_id = Column(Integer)
     amount = Column(Float)
     timestamp = Column(DateTime, default=datetime.utcnow)
+
+class GroupSplit(Base):
+   _tablename_ = "group_splits"
+    id = Column(Integer, primary_key=True)
+    trip_id = Column(Integer)
+    payer_id = Column(Integer)
+    total_amount = Column(Float)
+    split_details = Column(String)  # JSON string like: {"1": 100, "2": 50}
+    created_at = Column(DateTime, default=datetime.utcnow)
