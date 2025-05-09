@@ -1,9 +1,19 @@
-function App() {
+import { Routes, Route } from 'react-router-dom'
+import Navbar from './components/Navbar'
+import Home from './routes/Home'
+import About from './routes/About'
+
+export default function App() {
   return (
-    <div className="p-6 text-xl text-blue-500">
-      TripTribe Frontend is live with TailwindCSS 🎉
-    </div>
+    <>
+      <Navbar />
+      <div className="p-4">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+        </Routes>
+      </div>
+    </>
   )
 }
 
-export default App
