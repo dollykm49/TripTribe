@@ -9,3 +9,6 @@ pydantic
 aiofiles
 python-multipart
 alembic
+websockets
+openai
+ipython
